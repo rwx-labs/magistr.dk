@@ -14,7 +14,9 @@ use tokio::signal;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 
 static ASSETS: phf::Map<&'static str, &'static [u8]> = phf_map! {
-    "static/fartscroll.js" => include_bytes!("../static/fartscroll.js")
+    "static/fartscroll.js" => include_bytes!("../static/fartscroll.js"),
+    "static/robots.txt" => include_bytes!("../static/robots.txt")
+
 };
 
 struct HtmlTemplate<T>(T);
@@ -37,20 +39,57 @@ struct QuoteTemplate {
     name: String,
 }
 
+#[derive(Template)]
+#[template(path = "base.html")]
+struct BaseTemplate<'a> {
+    title: &'a str,
+}
+
+mod utils {
+    pub fn random_statement() -> String {
+        use rand::prelude::*;
+
+        const STATEMENTS: &[&str; 11] = &[
+            "Treds",
+            "Hold kæft!",
+            "Goddag.",
+            "Grønne svin på et skod beat",
+            "dddddd",
+            "<robutler>Goddag og farvel.</robutler>",
+            "ja",
+            "60",
+            ":D",
+            "Godt.",
+            "100",
+        ];
+
+        let mut rng = rand::thread_rng();
+
+        STATEMENTS.choose(&mut rng).unwrap().to_string()
+    }
+}
+
 #[derive(Deserialize)]
 struct QuoteId {
-    id: usize,
+    id: Option<usize>,
 }
 
 async fn quote(Query(params): Query<QuoteId>) -> impl IntoResponse {
-    let name = format!("{}", params.id);
-    let template = QuoteTemplate { name };
+    if let Some(id) = params.id {
+        let name = format!("{}", id);
 
-    HtmlTemplate(template)
+        HtmlTemplate(QuoteTemplate { name }).into_response()
+    } else {
+        HtmlTemplate(BaseTemplate { title: "goddag" }).into_response()
+    }
 }
 
 async fn fartscroll<'a>() -> &'a [u8] {
     ASSETS.get("static/fartscroll.js").unwrap()
+}
+
+async fn robots<'a>() -> &'a [u8] {
+    ASSETS.get("static/robots.txt").unwrap()
 }
 
 async fn shutdown_signal() {
@@ -87,6 +126,7 @@ async fn main() -> miette::Result<()> {
     let app = Router::new()
         .route("/", get(quote))
         .route("/fartscroll.js", get(fartscroll))
+        .route("/robots.txt", get(robots))
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new());
 

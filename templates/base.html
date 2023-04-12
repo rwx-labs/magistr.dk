@@ -1,0 +1,140 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.php" />
+<title>Goddag: Quotes - og tegneserier!!!!</title>
+<style type="text/css">
+body {
+    color: #000000;
+#    color : #CC0033;
+    background-color : #33FFFF;
+    font-size: 12px;
+    font-style: normal;
+    font-family: verdana, geneva, arial, sans-serif;
+}  
+a:link {
+    color: #CC0000; 
+    font-weight: bold;;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #66FFCC; 
+    font-weight: normal;
+    text-decoration: none;
+}
+
+#linkD {
+	size: 20px;
+}
+a:hover {
+    color: #333399; 
+    font-weight: bold;;
+    text-decoration: underline;
+}
+
+a:active {
+    color: #CCCC33; 
+    font-weight: italic;;
+    text-decoration: none
+} 
+.header {
+    color: #993399;
+    background-color: #66FF33;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 40px;
+    font-style: bold;
+}
+.channel {
+    color: #3300CC;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 20px;
+    font-style: normal;
+    text-decoration: underline;
+}
+.quoteDate {
+    border-bottom: 1px dashed black;
+}
+.statement {
+    position: relative;
+    margin-left: 490px;
+    top: -10px;
+    color: #00CCFF;
+    background-color: #CC9933;
+    font-style: bold;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 17px;
+}
+.quoteText {
+	font-family:monospace;
+	white-space:pre-wrap;
+}
+
+#cartoons img {
+	height: 50px;
+	border: 0;
+	margin-right: 5px;
+	}
+#cartoons #headline {
+    color: #9999FF; 
+    font-weight: oblique;;
+	}
+	
+li {
+    font-size: 1.2em;
+    text-decoration: underline;
+}
+#voteArea {
+    margin-top: 10px;
+}
+#voteLeft {
+    float: left;
+    background-color: #00FF00;
+}
+#voteRight {
+    float: right;
+    background-color: #0066CC;
+}
+#voteLeft, #voteRight {
+    width: 48% !important;
+}
+.voteLink {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    background-color: #330000;
+    display: block;
+    vertical-align: middle;
+    padding: 3px 0;
+    margin-bottom: 5px;
+}
+#voteRight .voteLink {
+    background-color: #66FF00;
+}
+</style>
+<link rel="icon" type="image/png" href="favicon.png" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/static/fartscroll.js"></script>
+<script>
+ $(document).ready(function() {
+ $(document).fartscroll(800);
+ });
+</script>
+</head>
+
+<body>
+<div>
+    <span class="header">#magistr quotes!</span>
+    <span class="channel">- #magistr @ dk.quakenet.org</span><br />
+    <span class="statement">{{ utils::random_statement() }}</span>
+</div>
+
+<div class="content">
+{% block content %}{% endblock %}
+</div>
+
+
+</body>
+</html>
+
+

@@ -71,4 +71,21 @@ mod utils {
 
         rng.gen_range(min..=max).to_string()
     }
+
+    pub fn random_hex_color() -> String {
+        const COLORS: &[&str; 6] = &["CC", "99", "00", "FF", "66", "33"];
+
+        let mut rng = rand::thread_rng();
+        let mut c = || COLORS.choose(&mut rng).unwrap().to_string();
+
+        format!("{}{}{}", c(), c(), c())
+    }
+
+    pub fn random_font_weight() -> String {
+        const WEIGHT: &[&str; 4] = &["oblique", "bold", "italic", "normal"];
+
+        let mut rng = rand::thread_rng();
+
+        WEIGHT.choose(&mut rng).unwrap().to_string()
+    }
 }

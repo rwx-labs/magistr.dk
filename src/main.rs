@@ -8,16 +8,23 @@ use axum::{
     routing::get,
     Router,
 };
+use clap::Parser;
 use phf::phf_map;
 use serde::Deserialize;
 use tokio::signal;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
+use tracing::debug;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+mod cli;
+mod database;
+mod error;
+
+pub use error::Error;
 
 static ASSETS: phf::Map<&'static str, &'static [u8]> = phf_map! {
     "static/fartscroll.js" => include_bytes!("../static/fartscroll.js"),
     "static/robots.txt" => include_bytes!("../static/robots.txt")
-
 };
 
 struct HtmlTemplate<T>(T);
@@ -130,6 +137,16 @@ async fn main() -> miette::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    let opts = cli::Opts::parse();
+
+    debug!("connecting to database");
+    let pool = database::connect(opts.database_url.as_str()).await?;
+    debug!("connected to database");
+
+    debug!("running database migrations");
+    database::migrate(pool.clone()).await?;
+    debug!("database migrations complete");
+
     let app = Router::new()
         .route("/", get(quote))
         .route("/static/fartscroll.js", get(fartscroll))
@@ -137,7 +154,7 @@ async fn main() -> miette::Result<()> {
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
 
     tracing::debug!("listening on {}", addr);
 

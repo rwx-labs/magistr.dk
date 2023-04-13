@@ -3,7 +3,7 @@ ARG RUST_VERSION=1.68.2
 FROM rust:${RUST_VERSION} as builder
 
 WORKDIR /app
-COPY ../ /app
+COPY . /app
 
 RUN cargo build --release
 

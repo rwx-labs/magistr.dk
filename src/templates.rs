@@ -32,10 +32,15 @@ pub struct BaseTemplate<'a> {
     pub title: &'a str,
 }
 
-mod utils {
-    pub fn random_statement() -> String {
-        use rand::prelude::*;
+#[derive(Template)]
+#[template(path = "create_quote.html")]
+pub struct NewQuoteTemplate {}
 
+mod utils {
+    use chrono::Local;
+    use rand::prelude::*;
+
+    pub fn random_statement() -> String {
         const STATEMENTS: &[&str; 11] = &[
             "Treds",
             "Hold kæft!",
@@ -53,5 +58,17 @@ mod utils {
         let mut rng = rand::thread_rng();
 
         STATEMENTS.choose(&mut rng).unwrap().to_string()
+    }
+
+    pub fn current_date_formatted(s: &str) -> String {
+        let dt = Local::now();
+
+        dt.format(s).to_string()
+    }
+
+    pub fn random_number(min: usize, max: usize) -> String {
+        let mut rng = rand::thread_rng();
+
+        rng.gen_range(min..=max).to_string()
     }
 }

@@ -1,6 +1,11 @@
 use std::net::SocketAddr;
 
-use axum::{extract::Query, response::IntoResponse, routing::get, Router};
+use axum::{
+    extract::{Form, Query},
+    response::IntoResponse,
+    routing::get,
+    Router,
+};
 use clap::Parser;
 use serde::Deserialize;
 use tokio::signal;
@@ -23,6 +28,19 @@ struct QuoteId {
     id: Option<usize>,
 }
 
+#[derive(Debug, Deserialize)]
+struct CreateQuoteRequest {
+    #[serde(rename = "tal0")]
+    number_1: String,
+    #[serde(rename = "tal1")]
+    number_2: String,
+    #[serde(rename = "inp_dato")]
+    date: String,
+    #[serde(rename = "inp_tekst")]
+    text: String,
+    addition: String,
+}
+
 async fn quote(Query(params): Query<QuoteId>) -> impl IntoResponse {
     if let Some(id) = params.id {
         let name = format!("{}", id);
@@ -30,6 +48,25 @@ async fn quote(Query(params): Query<QuoteId>) -> impl IntoResponse {
         HtmlTemplate(templates::QuoteTemplate { name }).into_response()
     } else {
         HtmlTemplate(templates::BaseTemplate { title: "goddag" }).into_response()
+    }
+}
+
+async fn new_quote() -> impl IntoResponse {
+    HtmlTemplate(templates::NewQuoteTemplate {}).into_response()
+}
+
+#[tracing::instrument]
+async fn post_quote(Form(quote): Form<CreateQuoteRequest>) -> &'static str {
+    let number_1 = quote.number_1.parse::<usize>().unwrap_or(0);
+    let number_2 = quote.number_2.parse::<usize>().unwrap_or(0);
+    let addition = quote.addition.parse::<usize>().unwrap_or(6080);
+
+    if number_1 + number_2 == addition {
+        debug!("adding quote to database");
+
+        "oki"
+    } else {
+        "ka du ik regne mand"
     }
 }
 
@@ -90,6 +127,7 @@ async fn main() -> miette::Result<()> {
 
     let app = Router::new()
         .route("/", get(quote))
+        .route("/ny.php", get(new_quote).post(post_quote))
         .route("/static/fartscroll.js", get(fartscroll))
         .route("/robots.txt", get(robots))
         .layer(TraceLayer::new_for_http())

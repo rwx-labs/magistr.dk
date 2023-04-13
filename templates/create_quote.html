@@ -1,0 +1,20 @@
+{% set number_1 = utils::random_number(0, 10) %}
+{% set number_2 = utils::random_number(0, 10) %}
+<form action="/ny.php" method="post">
+<input type='hidden' name='csrfmiddlewaretoken' value='J47CwRTo21G9HIXy1PkKW16LzXYaMdow' />
+<table>
+ <tr>
+  <td>Tekst:</td><td><textarea name="inp_tekst" cols="40" rows="10"></textarea>*</td>
+ </tr>
+ <tr>
+   <td>Dato:</td><td><input type="text" value="{{ utils::current_date_formatted("%d/%m-%Y") }}" name="inp_dato">&nbsp;(dd/mm-yyy)</td>
+ </tr>
+ <tr>
+   <td>Hvad er: {{ number_1 }} + {{ number_2 }}?</td><td><input
+      type="text" name="addition"></td>
+ </tr>
+</table>
+<input type="hidden" name="tal0" value="{{ number_1 }}">
+<input type="hidden" name="tal1" value="{{ number_2 }}">
+<input type="submit" name="b1" value="Quote'em">&nbsp;
+<input type="reset" name="b2" value="Slet Alt">

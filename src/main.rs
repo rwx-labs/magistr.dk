@@ -12,6 +12,7 @@ use phf::phf_map;
 use serde::Deserialize;
 use tokio::signal;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 static ASSETS: phf::Map<&'static str, &'static [u8]> = phf_map! {
     "static/fartscroll.js" => include_bytes!("../static/fartscroll.js"),
@@ -55,7 +56,7 @@ mod utils {
             "Goddag.",
             "Grønne svin på et skod beat",
             "dddddd",
-            "<robutler>Goddag og farvel.</robutler>",
+            "<robutler> Goddag og farvel.",
             "ja",
             "60",
             ":D",
@@ -121,11 +122,17 @@ async fn shutdown_signal() {
 #[tokio::main]
 async fn main() -> miette::Result<()> {
     // initialize tracing
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "magistr=debug,tower_http=debug".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
     let app = Router::new()
         .route("/", get(quote))
-        .route("/fartscroll.js", get(fartscroll))
+        .route("/static/fartscroll.js", get(fartscroll))
         .route("/robots.txt", get(robots))
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new());

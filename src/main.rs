@@ -84,7 +84,7 @@ async fn quote(Query(params): Query<QuoteId>, State(state): State<AppState>) -> 
     let db = state.database;
 
     if let Some(id) = params.id {
-        let quote = db.get_quote(id as i32).await.ok().flatten();
+        let quote = database::get_quote(&db, id as i32).await;
 
         if let Some(quote) = quote {
             (
@@ -99,15 +99,15 @@ async fn quote(Query(params): Query<QuoteId>, State(state): State<AppState>) -> 
         }
     } else {
         trace!("fetching all quotes");
-        let quotes = db.get_quotes().await;
+        let quotes = database::get_quotes(&db).await;
         trace!("fetched all quotes");
 
         match quotes {
-            Ok(quotes) => (
+            Some(quotes) => (
                 StatusCode::OK,
                 HtmlTemplate(templates::QuotesTemplate { quotes }).into_response(),
             ),
-            Err(_) => (
+            None => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 HtmlTemplate(templates::BaseTemplate { title: "error" }).into_response(),
             ),

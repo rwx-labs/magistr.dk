@@ -5,7 +5,7 @@ pub struct NewQuote {
     pub text: String,
 }
 
-#[derive(Debug, FromRow)]
+#[derive(Debug, FromRow, Clone)]
 pub struct Quote {
     pub id: i32,
     pub date: String,

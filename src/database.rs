@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use cached::proc_macro::{cached, once};
 use sqlx::{
     migrate::Migrator,
     postgres::{PgPool, PgPoolOptions},
@@ -42,21 +43,39 @@ pub async fn migrate(pool: Database) -> Result<(), Error> {
         .map_err(Error::DatabaseMigrationError)
 }
 
-impl Database {
-    #[instrument(err, skip(self))]
-    pub async fn get_quote(&self, quote_id: i32) -> Result<Option<models::Quote>, Error> {
-        trace!("querying specific quote");
+#[once(time = 120, option = true, sync_writes = true)]
+pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
+    trace!("reading all quotes from database");
 
-        let quote: Option<models::Quote> = sqlx::query_as("SELECT * FROM quotes WHERE id = $1")
-            .bind(quote_id)
-            .fetch_optional(&self.0)
-            .await?;
+    let quotes = sqlx::query_as("SELECT * FROM quotes ORDER BY id DESC")
+        .fetch_all(&database.0)
+        .await
+        .ok();
 
-        trace!(result = ?quote);
-
-        Ok(quote)
+    if let Some(ref qs) = quotes {
+        trace!(num_results = qs.len());
     }
 
+    quotes
+}
+
+#[cached(time = 1800, key = "i32", convert = r#"{ quote_id }"#)]
+pub async fn get_quote(database: &Database, quote_id: i32) -> Option<models::Quote> {
+    trace!("querying specific quote");
+
+    let quote: Option<models::Quote> = sqlx::query_as("SELECT * FROM quotes WHERE id = $1")
+        .bind(quote_id)
+        .fetch_optional(&database.0)
+        .await
+        .ok()
+        .flatten();
+
+    trace!(result = ?quote);
+
+    quote
+}
+
+impl Database {
     #[instrument(err, skip_all)]
     pub async fn create_quote(&self, quote: models::NewQuote) -> Result<(), Error> {
         trace!("querying specific quote");
@@ -68,18 +87,5 @@ impl Database {
             .await?;
 
         Ok(())
-    }
-
-    #[instrument(err, skip_all)]
-    pub async fn get_quotes(&self) -> Result<Vec<models::Quote>, Error> {
-        trace!("reading all quotes from database");
-
-        let quotes: Vec<models::Quote> = sqlx::query_as("SELECT * FROM quotes ORDER BY id DESC")
-            .fetch_all(&self.0)
-            .await?;
-
-        trace!(num_results = quotes.len());
-
-        Ok(quotes)
     }
 }

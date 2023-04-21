@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% for quote in quotes %}
     <div class='quoteBox'>
         <div class='quoteDate'>
           <a href='/?id={{ quote.id }}'>{{ quote.date }}</a>:<br />
@@ -10,6 +11,6 @@
         </span>
     </div>
 
-<br />
-<a href='/'>Tilbag... 60</a>
+{% endfor %}
 {% endblock content %}
+

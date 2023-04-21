@@ -6,6 +6,8 @@ use axum::{
     response::{Html, IntoResponse, Response},
 };
 
+use crate::models;
+
 pub struct HtmlTemplate<T>(pub T);
 
 impl<T> IntoResponse for HtmlTemplate<T>
@@ -21,9 +23,15 @@ where
 }
 
 #[derive(Template)]
-#[template(path = "quote.html")]
+#[template(path = "quote.html", ext = "html")]
 pub struct QuoteTemplate {
-    pub name: String,
+    pub quote: models::Quote,
+}
+
+#[derive(Template)]
+#[template(path = "quotes.html", ext = "html")]
+pub struct QuotesTemplate {
+    pub quotes: Vec<models::Quote>,
 }
 
 #[derive(Template)]

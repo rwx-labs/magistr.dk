@@ -2,7 +2,6 @@ use std::net::SocketAddr;
 
 use axum::{
     body::{boxed, Full},
-    error_handling::HandleErrorLayer,
     extract::{Form, Query, State},
     http::{header, StatusCode, Uri},
     response::{IntoResponse, Response},
@@ -13,7 +12,6 @@ use clap::Parser;
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 use tokio::signal;
-use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 use tracing::{debug, instrument, trace};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -150,7 +148,7 @@ async fn post_quote(
 
         match result {
             Ok(_) => "oki",
-            Err(err) => "pis",
+            Err(_) => "pis",
         }
     } else {
         "4kert"

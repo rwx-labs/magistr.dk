@@ -58,6 +58,19 @@ impl Database {
     }
 
     #[instrument(err, skip_all)]
+    pub async fn create_quote(&self, quote: models::NewQuote) -> Result<(), Error> {
+        trace!("querying specific quote");
+
+        sqlx::query("INSERT INTO quotes (date, text) VALUES ($1, $2)")
+            .bind(quote.date)
+            .bind(quote.text)
+            .execute(&self.0)
+            .await?;
+
+        Ok(())
+    }
+
+    #[instrument(err, skip_all)]
     pub async fn get_quotes(&self) -> Result<Vec<models::Quote>, Error> {
         trace!("reading all quotes from database");
 

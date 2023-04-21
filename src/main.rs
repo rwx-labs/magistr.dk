@@ -1,27 +1,37 @@
 use std::net::SocketAddr;
 
 use axum::{
-    extract::{Form, Query},
-    response::IntoResponse,
+    body::{boxed, Full},
+    error_handling::HandleErrorLayer,
+    extract::{Form, Query, State},
+    http::{header, StatusCode, Uri},
+    response::{IntoResponse, Response},
     routing::get,
     Router,
 };
 use clap::Parser;
+use rust_embed::RustEmbed;
 use serde::Deserialize;
 use tokio::signal;
+use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
-use tracing::debug;
+use tracing::{debug, instrument, trace};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod cli;
 mod database;
 mod error;
-mod fs;
+mod models;
 mod templates;
 
 use templates::HtmlTemplate;
 
 pub use error::Error;
+
+#[derive(Clone)]
+struct AppState {
+    pub database: database::Database,
+}
 
 #[derive(Deserialize)]
 struct QuoteId {
@@ -41,13 +51,63 @@ struct CreateQuoteRequest {
     addition: String,
 }
 
-async fn quote(Query(params): Query<QuoteId>) -> impl IntoResponse {
-    if let Some(id) = params.id {
-        let name = format!("{}", id);
+#[derive(RustEmbed)]
+#[folder = "static/"]
+struct Asset;
 
-        HtmlTemplate(templates::QuoteTemplate { name }).into_response()
+pub struct StaticFile<T>(pub T);
+
+impl<T> IntoResponse for StaticFile<T>
+where
+    T: Into<String>,
+{
+    fn into_response(self) -> Response {
+        let path = self.0.into();
+
+        match Asset::get(path.as_str()) {
+            Some(content) => {
+                let body = boxed(Full::from(content.data));
+                let mime = mime_guess::from_path(path).first_or_octet_stream();
+                Response::builder()
+                    .header(header::CONTENT_TYPE, mime.as_ref())
+                    .body(body)
+                    .unwrap()
+            }
+            None => Response::builder()
+                .status(StatusCode::NOT_FOUND)
+                .body(boxed(Full::from("404")))
+                .unwrap(),
+        }
+    }
+}
+
+#[instrument(skip_all)]
+async fn quote(Query(params): Query<QuoteId>, State(state): State<AppState>) -> impl IntoResponse {
+    let db = state.database;
+
+    if let Some(id) = params.id {
+        let quote = db.get_quote(id as i32).await.ok().flatten();
+
+        if let Some(quote) = quote {
+            HtmlTemplate(templates::QuoteTemplate { quote }).into_response()
+        } else {
+            HtmlTemplate(templates::BaseTemplate {
+                title: "quote not found",
+            })
+            .into_response()
+        }
     } else {
-        HtmlTemplate(templates::BaseTemplate { title: "goddag" }).into_response()
+        trace!("fetching all quotes");
+        let quotes = db.get_quotes().await;
+        trace!("fetched all quotes");
+
+        match quotes {
+            Ok(quotes) => HtmlTemplate(templates::QuotesTemplate { quotes }).into_response(),
+            Err(_) => HtmlTemplate(templates::BaseTemplate {
+                title: "could not get quotes",
+            })
+            .into_response(),
+        }
     }
 }
 
@@ -70,12 +130,18 @@ async fn post_quote(Form(quote): Form<CreateQuoteRequest>) -> &'static str {
     }
 }
 
-async fn fartscroll<'a>() -> &'a [u8] {
-    fs::ASSETS.get("static/fartscroll.js").unwrap()
+async fn robots<'a>() -> impl IntoResponse {
+    StaticFile("robots.txt")
 }
 
-async fn robots<'a>() -> &'a [u8] {
-    fs::ASSETS.get("static/robots.txt").unwrap()
+async fn static_handler(uri: Uri) -> impl IntoResponse {
+    let mut path = uri.path().trim_start_matches('/').to_string();
+
+    if path.starts_with("static/") {
+        path = path.replace("static/", "");
+    }
+
+    StaticFile(path)
 }
 
 async fn shutdown_signal() {
@@ -118,20 +184,22 @@ async fn main() -> miette::Result<()> {
     let opts = cli::Opts::parse();
 
     debug!("connecting to database");
-    let pool = database::connect(opts.database_url.as_str()).await?;
+    let db = database::connect(opts.database_url.as_str()).await?;
     debug!("connected to database");
 
     debug!("running database migrations");
-    database::migrate(pool.clone()).await?;
+    database::migrate(db.clone()).await?;
     debug!("database migrations complete");
 
+    let app_state = AppState { database: db };
     let app = Router::new()
         .route("/", get(quote))
         .route("/ny.php", get(new_quote).post(post_quote))
-        .route("/static/fartscroll.js", get(fartscroll))
+        .route("/static/*file", get(static_handler))
         .route("/robots.txt", get(robots))
         .layer(TraceLayer::new_for_http())
-        .layer(CompressionLayer::new());
+        .layer(CompressionLayer::new())
+        .with_state(app_state);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
 

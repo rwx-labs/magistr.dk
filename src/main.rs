@@ -2,18 +2,16 @@ use std::net::SocketAddr;
 
 use axum::{
     body::{boxed, Full},
-    error_handling::HandleErrorLayer,
     extract::{Form, Query, State},
     http::{header, StatusCode, Uri},
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, post},
     Router,
 };
 use clap::Parser;
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 use tokio::signal;
-use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
 use tracing::{debug, instrument, trace};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -89,12 +87,15 @@ async fn quote(Query(params): Query<QuoteId>, State(state): State<AppState>) -> 
         let quote = db.get_quote(id as i32).await.ok().flatten();
 
         if let Some(quote) = quote {
-            HtmlTemplate(templates::QuoteTemplate { quote }).into_response()
+            (
+                StatusCode::OK,
+                HtmlTemplate(templates::QuoteTemplate { quote }).into_response(),
+            )
         } else {
-            HtmlTemplate(templates::BaseTemplate {
-                title: "quote not found",
-            })
-            .into_response()
+            (
+                StatusCode::NOT_FOUND,
+                HtmlTemplate(templates::NotFoundTemplate).into_response(),
+            )
         }
     } else {
         trace!("fetching all quotes");
@@ -102,31 +103,55 @@ async fn quote(Query(params): Query<QuoteId>, State(state): State<AppState>) -> 
         trace!("fetched all quotes");
 
         match quotes {
-            Ok(quotes) => HtmlTemplate(templates::QuotesTemplate { quotes }).into_response(),
-            Err(_) => HtmlTemplate(templates::BaseTemplate {
-                title: "could not get quotes",
-            })
-            .into_response(),
+            Ok(quotes) => (
+                StatusCode::OK,
+                HtmlTemplate(templates::QuotesTemplate { quotes }).into_response(),
+            ),
+            Err(_) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                HtmlTemplate(templates::BaseTemplate { title: "error" }).into_response(),
+            ),
         }
     }
+}
+
+async fn not_found() -> impl IntoResponse {
+    (
+        StatusCode::NOT_FOUND,
+        HtmlTemplate(templates::NotFoundTemplate).into_response(),
+    )
 }
 
 async fn new_quote() -> impl IntoResponse {
     HtmlTemplate(templates::NewQuoteTemplate {}).into_response()
 }
 
-#[tracing::instrument]
-async fn post_quote(Form(quote): Form<CreateQuoteRequest>) -> &'static str {
+#[instrument(skip(state))]
+async fn post_quote(
+    State(state): State<AppState>,
+    Form(quote): Form<CreateQuoteRequest>,
+) -> impl IntoResponse {
     let number_1 = quote.number_1.parse::<usize>().unwrap_or(0);
     let number_2 = quote.number_2.parse::<usize>().unwrap_or(0);
     let addition = quote.addition.parse::<usize>().unwrap_or(6080);
 
     if number_1 + number_2 == addition {
         debug!("adding quote to database");
+        let db = state.database;
 
-        "oki"
+        let result = db
+            .create_quote(models::NewQuote {
+                date: quote.date,
+                text: quote.text,
+            })
+            .await;
+
+        match result {
+            Ok(_) => "oki",
+            Err(_) => "pis",
+        }
     } else {
-        "ka du ik regne mand"
+        "4kert"
     }
 }
 
@@ -194,9 +219,10 @@ async fn main() -> miette::Result<()> {
     let app_state = AppState { database: db };
     let app = Router::new()
         .route("/", get(quote))
-        .route("/ny.php", get(new_quote).post(post_quote))
+        .route("/ny.php", post(post_quote).get(new_quote))
         .route("/static/*file", get(static_handler))
         .route("/robots.txt", get(robots))
+        .fallback(not_found)
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new())
         .with_state(app_state);

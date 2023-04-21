@@ -41,6 +41,10 @@ pub struct BaseTemplate<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "404.html")]
+pub struct NotFoundTemplate;
+
+#[derive(Template)]
 #[template(path = "create_quote.html")]
 pub struct NewQuoteTemplate {}
 

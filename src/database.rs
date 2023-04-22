@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use std::time::Duration;
 
 use cached::proc_macro::{cached, once};
 use sqlx::{
@@ -26,6 +27,7 @@ impl Deref for Database {
 pub async fn connect(url: &str) -> Result<Database, Error> {
     let pool = PgPoolOptions::new()
         .max_connections(5)
+        .idle_timeout(Duration::from_secs(30))
         .connect(url)
         .await
         .map_err(Error::DatabaseOpenError)

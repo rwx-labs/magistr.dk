@@ -63,7 +63,7 @@ pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
 
 #[cached(time = 1800, key = "i32", convert = r#"{ quote_id }"#)]
 pub async fn get_quote(database: &Database, quote_id: i32) -> Option<models::Quote> {
-    trace!("querying specific quote");
+    trace!(%quote_id, "querying specific quote");
 
     let quote: Option<models::Quote> = sqlx::query_as("SELECT * FROM quotes WHERE id = $1")
         .bind(quote_id)

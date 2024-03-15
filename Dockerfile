@@ -7,7 +7,7 @@ COPY . /app
 
 RUN cargo build --release
 
-FROM gcr.io/distroless/cc
+FROM gcr.io/distroless/cc-debian12
 
 USER nonroot
 

@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
 use axum::{
-    body::{boxed, Full},
+    body::Body,
     extract::{Form, Query, State},
     http::{header, StatusCode, Uri},
     response::{IntoResponse, Response},
@@ -64,7 +64,7 @@ where
 
         match Asset::get(path.as_str()) {
             Some(content) => {
-                let body = boxed(Full::from(content.data));
+                let body = Body::from(content.data);
                 let mime = mime_guess::from_path(path).first_or_octet_stream();
                 Response::builder()
                     .header(header::CONTENT_TYPE, mime.as_ref())
@@ -73,7 +73,7 @@ where
             }
             None => Response::builder()
                 .status(StatusCode::NOT_FOUND)
-                .body(boxed(Full::from("404")))
+                .body(Body::from("404"))
                 .unwrap(),
         }
     }
@@ -203,7 +203,12 @@ async fn main() -> miette::Result<()> {
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "magistr=debug,tower_http=debug".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::fmt::layer()
+                .json()
+                .with_current_span(false)
+                .with_span_list(false),
+        )
         .init();
 
     let opts = cli::Opts::parse();
@@ -231,8 +236,8 @@ async fn main() -> miette::Result<()> {
 
     tracing::debug!("listening on {}", addr);
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();

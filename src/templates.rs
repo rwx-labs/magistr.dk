@@ -5,6 +5,7 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Response},
 };
+use tracing::{instrument, trace};
 
 use crate::models;
 
@@ -14,9 +15,16 @@ impl<T> IntoResponse for HtmlTemplate<T>
 where
     T: Template,
 {
+    #[instrument(skip(self))]
     fn into_response(self) -> Response {
+        trace!("rendering");
+
         match self.0.render() {
-            Ok(html) => Html(html).into_response(),
+            Ok(html) => {
+                trace!("finished rendering; len={}", html.len());
+
+                Html(html).into_response()
+            }
             Err(_) => (StatusCode::INTERNAL_SERVER_ERROR).into_response(),
         }
     }

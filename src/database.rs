@@ -45,6 +45,7 @@ pub async fn migrate(pool: Database) -> Result<(), Error> {
         .map_err(Error::DatabaseMigrationError)
 }
 
+#[instrument(skip(database))]
 #[once(time = 300, option = true)]
 pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
     trace!("reading all quotes from database");
@@ -61,6 +62,7 @@ pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
     quotes
 }
 
+#[instrument(skip(database))]
 #[cached(time = 1800, key = "i32", convert = r#"{ quote_id }"#)]
 pub async fn get_quote(database: &Database, quote_id: i32) -> Option<models::Quote> {
     trace!(%quote_id, "querying specific quote");

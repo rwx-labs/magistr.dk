@@ -20,7 +20,7 @@ tracing-subscriber = { version = "0.3.16", features = ["env-filter", "json"] }
 tracing-opentelemetry = "0.23"
 sqlx = { version = "0.7.4", features = ["runtime-tokio-rustls", "postgres"] }
 clap = { version = "4.2.2", features = ["derive", "env"] }
-thiserror = "1.0.40"
+thiserror = "1.0.61"
 chrono = "0.4.24"
 rust-embed = "8.3.0"
 mime_guess = "2.0.4"

@@ -1338,7 +1338,7 @@ dependencies = [
  "mime_guess",
  "opentelemetry",
  "opentelemetry-otlp",
- "opentelemetry-semantic-conventions",
+ "opentelemetry-semantic-conventions 0.25.0",
  "opentelemetry_sdk",
  "rand",
  "rust-embed",
@@ -1566,7 +1566,7 @@ dependencies = [
  "http 0.2.12",
  "opentelemetry",
  "opentelemetry-proto",
- "opentelemetry-semantic-conventions",
+ "opentelemetry-semantic-conventions 0.14.0",
  "opentelemetry_sdk",
  "prost",
  "thiserror",
@@ -1591,6 +1591,12 @@ name = "opentelemetry-semantic-conventions"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f9ab5bd6c42fb9349dcf28af2ba9a0667f697f9bdcca045d39f2cec5543e2910"
+
+[[package]]
+name = "opentelemetry-semantic-conventions"
+version = "0.25.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b8e442487022a943e2315740e443dc5ee95fd541c18f509a5a6251b408a9f95"
 
 [[package]]
 name = "opentelemetry_sdk"

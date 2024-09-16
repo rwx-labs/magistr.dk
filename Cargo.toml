@@ -27,7 +27,7 @@ mime_guess = "2.0.4"
 tower = "0.4.13"
 cached = { version = "0.53.1", features = ["async"] }
 opentelemetry-otlp = "0.15.0"
-opentelemetry-semantic-conventions = "0.14.0"
+opentelemetry-semantic-conventions = "0.25.0"
 
 [profile.release]
 lto = "fat"

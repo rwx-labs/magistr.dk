@@ -1,19 +1,19 @@
 use std::net::SocketAddr;
 
 use axum::{
+    Router,
     body::Body,
-    http::{header, StatusCode, Uri},
+    http::{StatusCode, Uri, header},
     response::{IntoResponse, Response},
     routing::{get, post},
-    Router,
 };
 use miette::IntoDiagnostic;
 use rust_embed::RustEmbed;
 use tokio::{net::TcpListener, signal};
-use tower_http::{compression::CompressionLayer, trace::TraceLayer, CompressionLevel};
+use tower_http::{CompressionLevel, compression::CompressionLayer, trace::TraceLayer};
 use tracing::{debug, info, instrument};
 
-use crate::{database::Database, AppState};
+use crate::{AppState, database::Database};
 
 mod quotes;
 
@@ -79,7 +79,7 @@ async fn shutdown_signal() {
 }
 
 #[instrument]
-async fn robots<'a>() -> impl IntoResponse {
+async fn robots() -> impl IntoResponse {
     StaticFile("robots.txt")
 }
 
@@ -105,7 +105,7 @@ pub async fn start_server(db: Database) -> miette::Result<()> {
     let app = Router::new()
         .route("/", get(quotes::index))
         .route("/ny.php", post(quotes::create).get(quotes::new))
-        .route("/static/*file", get(static_handler))
+        .route("/static/{*file}", get(static_handler))
         .route("/robots.txt", get(robots))
         .fallback(not_found)
         .with_state(app_state)

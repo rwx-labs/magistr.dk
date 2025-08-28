@@ -1,8 +1,8 @@
 use axum::{
+    Form,
     extract::{Query, State},
     http::StatusCode,
     response::IntoResponse,
-    Form,
 };
 use serde::Deserialize;
 use tracing::{debug, instrument, trace};
@@ -103,7 +103,7 @@ pub(crate) async fn index(
             ),
             None => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                HtmlTemplate(templates::BaseTemplate { title: "error" }).into_response(),
+                HtmlTemplate(templates::BaseTemplate {}).into_response(),
             ),
         }
     }

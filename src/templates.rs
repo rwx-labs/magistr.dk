@@ -44,9 +44,7 @@ pub struct QuotesTemplate {
 
 #[derive(Template)]
 #[template(path = "base.html")]
-pub struct BaseTemplate<'a> {
-    pub title: &'a str,
-}
+pub struct BaseTemplate {}
 
 #[derive(Template)]
 #[template(path = "404.html")]
@@ -75,7 +73,7 @@ mod utils {
             "100",
         ];
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         STATEMENTS.choose(&mut rng).unwrap().to_string()
     }
@@ -87,15 +85,15 @@ mod utils {
     }
 
     pub fn random_number(min: usize, max: usize) -> String {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        rng.gen_range(min..=max).to_string()
+        rng.random_range(min..=max).to_string()
     }
 
     pub fn random_hex_color() -> String {
         const COLORS: &[&str; 6] = &["CC", "99", "00", "FF", "66", "33"];
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut c = || COLORS.choose(&mut rng).unwrap().to_string();
 
         format!("{}{}{}", c(), c(), c())
@@ -104,7 +102,7 @@ mod utils {
     pub fn random_font_weight() -> String {
         const WEIGHT: &[&str; 4] = &["oblique", "bold", "italic", "normal"];
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         WEIGHT.choose(&mut rng).unwrap().to_string()
     }

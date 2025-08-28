@@ -8,8 +8,8 @@ use sqlx::{
 };
 use tracing::{instrument, trace};
 
-use crate::models;
 use crate::Error;
+use crate::models;
 
 static MIGRATOR: Migrator = sqlx::migrate!();
 
@@ -46,7 +46,7 @@ pub async fn migrate(pool: Database) -> Result<(), Error> {
 }
 
 #[instrument(skip(database))]
-#[once(time = 300, option = true)]
+#[once(time = 300, option = true, sync_writes = true)]
 pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
     trace!("reading all quotes from database");
 
@@ -63,7 +63,12 @@ pub async fn get_quotes(database: &Database) -> Option<Vec<models::Quote>> {
 }
 
 #[instrument(skip(database))]
-#[cached(time = 1800, key = "i32", convert = r#"{ quote_id }"#)]
+#[cached(
+    time = 1800,
+    key = "i32",
+    convert = r#"{ quote_id }"#,
+    sync_writes = "default"
+)]
 pub async fn get_quote(database: &Database, quote_id: i32) -> Option<models::Quote> {
     trace!(%quote_id, "querying specific quote");
 

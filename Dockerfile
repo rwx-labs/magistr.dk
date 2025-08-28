@@ -1,6 +1,6 @@
-ARG RUST_VERSION=1.76.0
+ARG RUST_VERSION=1.89.0
 
-FROM rust:${RUST_VERSION} as builder
+FROM rust:${RUST_VERSION} AS builder
 
 WORKDIR /app
 COPY . /app

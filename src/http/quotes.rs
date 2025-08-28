@@ -2,7 +2,7 @@ use axum::{
     Form,
     extract::{Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{IntoResponse, Redirect},
 };
 use serde::Deserialize;
 use tracing::{debug, instrument, trace};
@@ -52,17 +52,18 @@ pub(crate) async fn create(
             })
             .await;
 
-        // Flush the quotes from
+        // Flush the quotes cache.
         if database::get_quotes_prime_cache(&db).await.is_some() {
             debug!("primed quotes cache");
         }
 
         match result {
-            Ok(()) => "oki",
-            Err(_) => "pis",
+            Ok(Some(quote_id)) => Redirect::to(format!("/?id={quote_id}").as_str()).into_response(),
+            Ok(None) => "pis".into_response(),
+            Err(_) => "pis".into_response(),
         }
     } else {
-        "4kert"
+        "4kert".into_response()
     }
 }
 

@@ -86,15 +86,16 @@ pub async fn get_quote(database: &Database, quote_id: i32) -> Option<models::Quo
 
 impl Database {
     #[instrument(err, skip_all)]
-    pub async fn create_quote(&self, quote: models::NewQuote) -> Result<(), Error> {
+    pub async fn create_quote(&self, quote: models::NewQuote) -> Result<Option<i32>, Error> {
         trace!("querying specific quote");
 
-        sqlx::query("INSERT INTO quotes (date, text) VALUES ($1, $2)")
-            .bind(quote.date)
-            .bind(quote.text)
-            .execute(&self.0)
-            .await?;
+        let quote_id =
+            sqlx::query_scalar("INSERT INTO quotes (date, text) VALUES ($1, $2) RETURNING id")
+                .bind(quote.date)
+                .bind(quote.text)
+                .fetch_optional(&self.0)
+                .await?;
 
-        Ok(())
+        Ok(quote_id)
     }
 }

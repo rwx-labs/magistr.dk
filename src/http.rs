@@ -105,7 +105,8 @@ pub async fn serve(config: &config::Http, app_state: crate::AppState) -> miette:
         .with_state(app_state)
         .layer(TraceLayer::new_for_http());
 
-    if config.compression_enabled {
+    if config.compression {
+        debug!("enabling http compression");
         let compression_layer = CompressionLayer::new().quality(CompressionLevel::Fastest);
         app = app.layer(compression_layer);
     }

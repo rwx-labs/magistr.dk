@@ -5,7 +5,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug, Diagnostic)]
 pub enum Error {
-    #[error("cannot connect to database")]
+    #[error("cannot connect to database: {0}")]
     #[diagnostic(code(magistr::db_open))]
     DatabaseOpenError(#[source] sqlx::Error),
 

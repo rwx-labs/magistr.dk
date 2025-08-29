@@ -23,9 +23,9 @@ services:
     - '127.0.0.1:14268:14268'
     command:
     - --set
-    - receivers.otlp.protocols.http.endpoint=0.0.0.0:4318
+    - receivers.otlp.protocols.http.endpoint=127.0.0.1:4318
     - --set
-    - receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317
+    - receivers.otlp.protocols.grpc.endpoint=127.0.0.1:4317
 
 volumes:
   postgres_data:

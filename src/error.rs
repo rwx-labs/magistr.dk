@@ -5,16 +5,23 @@ use thiserror::Error;
 
 #[derive(Error, Debug, Diagnostic)]
 pub enum Error {
-    #[error("Cannot connect to database database")]
-    #[diagnostic(code(redirekt::db_open))]
+    #[error("cannot connect to database")]
+    #[diagnostic(code(magistr::db_open))]
     DatabaseOpenError(#[source] sqlx::Error),
 
-    #[error("Could not acquire a connection from the connection pool")]
+    #[error("could not acquire a connection from the connection pool")]
     DatabaseConnAcqError(#[source] sqlx::Error),
 
-    #[error("Database migration failed")]
+    #[error("database migration failed")]
     DatabaseMigrationError(#[source] sqlx::migrate::MigrateError),
 
-    #[error("Database query failed")]
+    #[error("database query failed")]
     DatabaseQueryFailed(#[from] sqlx::Error),
+
+    #[error("missing expected environment variable `{0}'")]
+    MissingEnv(String),
+    #[error("could not install global tracing subscriber")]
+    TracingTryInit(#[from] tracing_subscriber::util::TryInitError),
+    #[error("could not build opentelemetry span exporter")]
+    BuildOtelExporter(#[source] Box<dyn std::error::Error + Sync + Send>),
 }

@@ -6,9 +6,10 @@ use sqlx::{
     migrate::Migrator,
     postgres::{PgPool, PgPoolOptions},
 };
-use tracing::{instrument, trace};
+use tracing::{debug, instrument, trace};
 
 use crate::Error;
+use crate::config;
 use crate::models;
 
 static MIGRATOR: Migrator = sqlx::migrate!();
@@ -24,24 +25,30 @@ impl Deref for Database {
     }
 }
 
-pub async fn connect(url: &str) -> Result<Database, Error> {
+pub async fn connect(config: &config::Database) -> Result<Database, Error> {
+    debug!("connecting to database");
+
     let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .idle_timeout(Duration::from_secs(30))
-        .connect(url)
+        .max_connections(config.max_connections)
+        .idle_timeout(config.idle_timeout)
+        .connect(config.url.as_str())
         .await
         .map_err(Error::DatabaseOpenError)
         .map(Database)?;
+
+    debug!("connected to database");
 
     Ok(pool)
 }
 
 pub async fn migrate(pool: Database) -> Result<(), Error> {
+    debug!("running database migrations");
     let mut conn = pool.acquire().await.map_err(Error::DatabaseConnAcqError)?;
 
     MIGRATOR
         .run(&mut conn)
         .await
+        .inspect(|()| debug!("finished running database migrations"))
         .map_err(Error::DatabaseMigrationError)
 }
 

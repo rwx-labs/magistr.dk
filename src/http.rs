@@ -1,5 +1,3 @@
-use std::net::SocketAddr;
-
 use axum::{
     Router,
     body::Body,
@@ -9,11 +7,12 @@ use axum::{
 };
 use miette::IntoDiagnostic;
 use rust_embed::RustEmbed;
+use tokio::signal::unix::SignalKind;
 use tokio::{net::TcpListener, signal};
 use tower_http::{CompressionLevel, compression::CompressionLayer, trace::TraceLayer};
 use tracing::{debug, info, instrument};
 
-use crate::{AppState, database::Database};
+use crate::{AppState, config};
 
 mod quotes;
 
@@ -61,7 +60,7 @@ async fn shutdown_signal() {
 
     #[cfg(unix)]
     let terminate = async {
-        signal::unix::signal(signal::unix::SignalKind::terminate())
+        signal::unix::signal(SignalKind::terminate())
             .expect("failed to install signal handler")
             .recv()
             .await;
@@ -94,26 +93,24 @@ async fn static_handler(uri: Uri) -> impl IntoResponse {
     StaticFile(path)
 }
 
-#[instrument(skip_all)]
-pub async fn start_server(db: Database) -> miette::Result<()> {
+pub async fn serve(config: &config::Http, app_state: crate::AppState) -> miette::Result<()> {
     debug!("starting http server");
 
-    let app_state = AppState {
-        database: db.clone(),
-    };
-
-    let app = Router::new()
+    let mut app = Router::new()
         .route("/", get(quotes::index))
         .route("/ny.php", post(quotes::create).get(quotes::new))
         .route("/static/{*file}", get(static_handler))
         .route("/robots.txt", get(robots))
         .fallback(not_found)
         .with_state(app_state)
-        .layer(TraceLayer::new_for_http())
-        .layer(CompressionLayer::new().quality(CompressionLevel::Fastest));
+        .layer(TraceLayer::new_for_http());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    if config.compression_enabled {
+        let compression_layer = CompressionLayer::new().quality(CompressionLevel::Fastest);
+        app = app.layer(compression_layer);
+    }
 
+    let addr = config.address;
     debug!("binding to {}", addr);
     let listener = TcpListener::bind(addr).await.into_diagnostic()?;
     debug!("listening on {}", addr);

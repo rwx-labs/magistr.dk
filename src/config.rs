@@ -1,4 +1,7 @@
-use std::{net::SocketAddr, time::Duration};
+use std::{
+    net::{Ipv6Addr, SocketAddr},
+    time::Duration,
+};
 
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -39,14 +42,14 @@ pub struct Http {
     /// The address to listen to connections on.
     pub address: SocketAddr,
     /// Enable support for compressing responses if the client asks for it.
-    pub compression_enabled: bool,
+    pub compression: bool,
 }
 
 impl Default for Http {
     fn default() -> Self {
         Http {
-            address: SocketAddr::from(([0, 0, 0, 0], 3000)),
-            compression_enabled: true,
+            address: SocketAddr::from((Ipv6Addr::UNSPECIFIED, 3000)),
+            compression: true,
         }
     }
 }

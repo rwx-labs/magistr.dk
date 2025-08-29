@@ -7,20 +7,20 @@
 body {
     color: #000000;
 #    color : #CC0033;
-    background-color: #{{ utils::random_hex_color() }};
+    background-color: {{ utils::random_hex_color() }};
     font-size: 12px;
     font-style: normal;
     font-family: verdana, geneva, arial, sans-serif;
 }  
 a:link {
-    color: #{{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_weight() }};;
+    color: {{ utils::random_hex_color() }}; 
+    font-weight: {{ utils::random_font_style() }};;
     text-decoration: none;
 }
 
 a:visited {
-    color: #{{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_weight() }};
+    color: {{ utils::random_hex_color() }}; 
+    font-weight: {{ utils::random_font_style() }};
     text-decoration: none;
 }
 
@@ -28,25 +28,25 @@ a:visited {
 	size: 20px;
 }
 a:hover {
-    color: #{{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_weight() }};;
+    color: {{ utils::random_hex_color() }}; 
+    font-weight: {{ utils::random_font_style() }};;
     text-decoration: underline;
 }
 
 a:active {
-    color: #{{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_weight() }};;
+    color: {{ utils::random_hex_color() }}; 
+    font-weight: {{ utils::random_font_style() }};;
     text-decoration: none
 } 
 .header {
-    color: #{{ utils::random_hex_color() }}; 
-    background-color: #{{ utils::random_hex_color() }}; 
+    color: {{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 40px;
     font-style: bold;
 }
 .channel {
-    color: #{{ utils::random_hex_color() }}; 
+    color: {{ utils::random_hex_color() }}; 
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 20px;
     font-style: normal;
@@ -59,9 +59,9 @@ a:active {
     position: relative;
     margin-left: {{ utils::random_number(100, 500) }}px;
     top: -10px;
-    color: #{{ utils::random_hex_color() }}; 
-    background-color: #{{ utils::random_hex_color() }}; 
-    font-style: {{ utils::random_font_weight() }};
+    color: {{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
+    font-style: {{ utils::random_font_style() }};
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: {{ utils::random_number(12, 40) }}px;
 }
@@ -74,9 +74,9 @@ a:active {
 	height: 50px;
 	border: 0;
 	margin-right: 5px;
-	}
+}
 #cartoons #headline {
-    color: #{{ utils::random_hex_color() }}; 
+    color: {{ utils::random_hex_color() }}; 
     font-weight: oblique;;
 	}
 	
@@ -89,11 +89,11 @@ li {
 }
 #voteLeft {
     float: left;
-    background-color: #{{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
 }
 #voteRight {
     float: right;
-    background-color: #{{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
 }
 #voteLeft, #voteRight {
     width: 48% !important;
@@ -102,25 +102,20 @@ li {
     width: 100%;
     text-align: center;
     font-size: 22px;
-    background-color: #{{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
     display: block;
     vertical-align: middle;
     padding: 3px 0;
     margin-bottom: 5px;
 }
 #voteRight .voteLink {
-    background-color: #{{ utils::random_hex_color() }}; 
+    background-color: {{ utils::random_hex_color() }}; 
 }
 </style>
-<link rel="icon" type="image/png" href="favicon.png" />
-<!--<script
-  src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
-<script src="/static/fartscroll.js" defer></script>
-<script>
- $(document).ready(function() {
- $(document).fartscroll(800);
- });
-</script>
+  <link rel="icon" type="image/png" href="/static/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
 </head>
 
 <body>

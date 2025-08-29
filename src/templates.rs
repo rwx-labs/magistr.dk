@@ -5,7 +5,7 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Response},
 };
-use tracing::{instrument, trace};
+use tracing::{error, instrument, trace};
 
 use crate::models;
 
@@ -15,17 +15,20 @@ impl<T> IntoResponse for HtmlTemplate<T>
 where
     T: Template,
 {
-    #[instrument(skip(self))]
+    #[instrument(skip(self), fields(template = std::any::type_name::<T>()))]
     fn into_response(self) -> Response {
-        trace!("rendering");
+        trace!("starting template rendering");
 
         match self.0.render() {
             Ok(html) => {
-                trace!("finished rendering; len={}", html.len());
-
+                trace!(len = %html.len(), "template rendered successfully");
                 Html(html).into_response()
             }
-            Err(_) => (StatusCode::INTERNAL_SERVER_ERROR).into_response(),
+            Err(err) => {
+                error!(?err, "template rendering failed: {err}");
+
+                (StatusCode::INTERNAL_SERVER_ERROR).into_response()
+            }
         }
     }
 }
@@ -58,8 +61,9 @@ mod utils {
     use chrono::Local;
     use rand::prelude::*;
 
+    /// Returns a random statement from a predefined list.
     pub fn random_statement() -> String {
-        const STATEMENTS: &[&str; 11] = &[
+        const STATEMENTS: &[&str] = &[
             "Treds",
             "Hold kæft!",
             "Goddag.",
@@ -74,36 +78,40 @@ mod utils {
         ];
 
         let mut rng = rand::rng();
-
         STATEMENTS.choose(&mut rng).unwrap().to_string()
     }
 
-    pub fn current_date_formatted(s: &str) -> String {
-        let dt = Local::now();
-
-        dt.format(s).to_string()
+    /// Formats the current date using the provided format string.
+    pub fn current_date_formatted(format: &str) -> String {
+        Local::now().format(format).to_string()
     }
 
+    /// Generates a random number within the specified range (inclusive)
     pub fn random_number(min: usize, max: usize) -> String {
         let mut rng = rand::rng();
-
         rng.random_range(min..=max).to_string()
     }
 
+    /// Generates a random hex color using predefined color components.
     pub fn random_hex_color() -> String {
-        const COLORS: &[&str; 6] = &["CC", "99", "00", "FF", "66", "33"];
+        const COLOR_COMPONENTS: &[&str] = &["CC", "99", "00", "FF", "66", "33"];
 
         let mut rng = rand::rng();
-        let mut c = || COLORS.choose(&mut rng).unwrap().to_string();
+        let mut color_component = || COLOR_COMPONENTS.choose(&mut rng).unwrap().to_string();
 
-        format!("{}{}{}", c(), c(), c())
+        format!(
+            "#{}{}{}",
+            color_component(),
+            color_component(),
+            color_component()
+        )
     }
 
-    pub fn random_font_weight() -> String {
-        const WEIGHT: &[&str; 4] = &["oblique", "bold", "italic", "normal"];
+    /// Returns a random CSS font-style property value.
+    pub fn random_font_style() -> String {
+        const FONT_STYLE: &[&str] = &["oblique", "bold", "italic", "normal"];
 
         let mut rng = rand::rng();
-
-        WEIGHT.choose(&mut rng).unwrap().to_string()
+        FONT_STYLE.choose(&mut rng).unwrap().to_string()
     }
 }

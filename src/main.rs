@@ -30,7 +30,6 @@ async fn main() -> miette::Result<()> {
         .into_diagnostic()?;
 
     tracing::try_init(&config.tracing)?;
-    debug!(?config, "loaded config");
 
     debug!("preparing database");
     let database = database::connect(&config.database).await?;

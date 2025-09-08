@@ -9,7 +9,7 @@ edition = "2024"
 askama = { version = "0.14.0" }
 axum = "0.8.4"
 cached = { version = "0.56.0", features = ["async"] }
-chrono = "0.4.24"
+chrono = "0.4.42"
 figment = { version = "0.10.19", features = ["env", "toml"] }
 miette = { version = "7.2.0", features = [] }
 mime_guess = "2.0.4"

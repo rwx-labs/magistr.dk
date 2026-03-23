@@ -1,4 +1,4 @@
-ARG RUST_VERSION=1.89.0
+ARG RUST_VERSION=1.94.0
 
 FROM rust:${RUST_VERSION} AS builder
 
@@ -7,7 +7,7 @@ COPY . /app
 
 RUN cargo build --release
 
-FROM gcr.io/distroless/cc-debian12
+FROM gcr.io/distroless/cc-debian13
 
 USER nonroot
 

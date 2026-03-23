@@ -6,19 +6,19 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-askama = { version = "0.14.0" }
+askama = { version = "0.15.5" }
 axum = "0.8.4"
-cached = { version = "0.56.0", features = ["async"] }
+cached = { version = "0.59.0", features = ["async"] }
 chrono = "0.4.24"
 figment = { version = "0.10.19", features = ["env", "toml"] }
 miette = { version = "7.2.0", features = [] }
 mime_guess = "2.0.4"
-opentelemetry = "0.30"
-opentelemetry-otlp = "0.30.0"
-opentelemetry-resource-detectors = "0.9.0"
-opentelemetry-semantic-conventions = "0.30.0"
-opentelemetry_sdk = { version = "0.30", features = ["rt-tokio"] }
-rand = "0.9.2"
+opentelemetry = "0.31"
+opentelemetry-otlp = "0.31.1"
+opentelemetry-resource-detectors = "0.10.0"
+opentelemetry-semantic-conventions = "0.31.0"
+opentelemetry_sdk = { version = "0.31", features = ["rt-tokio"] }
+rand = "0.10.0"
 rust-embed = "8.3.0"
 serde = { version = "1.0.160", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres"] }
@@ -27,7 +27,7 @@ tokio = { version = "1.27.0", features = ["full"] }
 tower = "0.5.2"
 tower-http = { version = "0.6.6", features = ["fs", "trace", "compression-full"] }
 tracing = "0.1.41"
-tracing-opentelemetry = "0.31"
+tracing-opentelemetry = "0.32"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json"] }
 url = { version = "2.5.7", features = ["serde"] }
 

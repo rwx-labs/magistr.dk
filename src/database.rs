@@ -1,5 +1,4 @@
 use std::ops::Deref;
-use std::time::Duration;
 
 use cached::proc_macro::{cached, once};
 use sqlx::{

@@ -59,8 +59,7 @@ pub(crate) async fn create(
 
         match result {
             Ok(Some(quote_id)) => Redirect::to(format!("/?id={quote_id}").as_str()).into_response(),
-            Ok(None) => "pis".into_response(),
-            Err(_) => "pis".into_response(),
+            Ok(None) | Err(_) => "pis".into_response(),
         }
     } else {
         "4kert".into_response()

@@ -34,7 +34,11 @@ url = { version = "2.5.7", features = ["serde"] }
 [profile.release]
 lto = "fat"
 strip = "debuginfo"
-panic = "abort"
+panic = "unwind"
 opt-level = "z"
 codegen-units = 1
-debug = true
+
+[profile.dev.package.askama_derive]
+# This will make incremental compilations faster, but the initial compile will
+# be slower.
+opt-level = 3

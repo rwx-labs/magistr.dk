@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class='quoteBox'>
-        <div class='quoteDate'>
-          <a href='/?id={{ quote.id }}'>{{ quote.date }}</a>:<br />
-        </div>
-        <span class='quoteText'>
-{{ quote.text }}
-        </span>
-    </div>
+    <article class="quote" id="quote-{{ quote.id }}">
+      <header>
+        <h2>
+          <a href="/?id={{ quote.id }}">{{ quote.date }}</a>:
+        </h2>
+      </header>
+
+      <pre class="quote-text"><samp>{{ quote.text }}</samp></pre>
+    </article>
 
 <br />
 <a href='/'>Tilbag... 60</a>

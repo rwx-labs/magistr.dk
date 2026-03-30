@@ -1,137 +1,50 @@
-<html>
+<!DOCTYPE html>
+<html lang="da">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.php" />
-<title>Goddag: Quotes - og tegneserier!!!!</title>
-<style type="text/css">
-body {
-    color: #000000;
-#    color : #CC0033;
-    background-color: {{ utils::random_hex_color() }};
-    font-size: 12px;
-    font-style: normal;
-    font-family: verdana, geneva, arial, sans-serif;
-}  
-a:link {
-    color: {{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_style() }};;
-    text-decoration: none;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goddag: Quotes - og tegneserier!!!!</title>
 
-a:visited {
-    color: {{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_style() }};
-    text-decoration: none;
-}
-
-#linkD {
-	size: 20px;
-}
-a:hover {
-    color: {{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_style() }};;
-    text-decoration: underline;
-}
-
-a:active {
-    color: {{ utils::random_hex_color() }}; 
-    font-weight: {{ utils::random_font_style() }};;
-    text-decoration: none
-} 
-.header {
-    color: {{ utils::random_hex_color() }}; 
-    background-color: {{ utils::random_hex_color() }}; 
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: 40px;
-    font-style: bold;
-}
-.channel {
-    color: {{ utils::random_hex_color() }}; 
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: 20px;
-    font-style: normal;
-    text-decoration: underline;
-}
-.quoteDate {
-    border-bottom: 1px dashed black;
-}
-.statement {
-    position: relative;
-    margin-left: {{ utils::random_number(100, 500) }}px;
-    top: -10px;
-    color: {{ utils::random_hex_color() }}; 
-    background-color: {{ utils::random_hex_color() }}; 
-    font-style: {{ utils::random_font_style() }};
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: {{ utils::random_number(12, 40) }}px;
-}
-.quoteText {
-	font-family:monospace;
-	white-space:pre-wrap;
-}
-
-#cartoons img {
-	height: 50px;
-	border: 0;
-	margin-right: 5px;
-}
-#cartoons #headline {
-    color: {{ utils::random_hex_color() }}; 
-    font-weight: oblique;;
-	}
-	
-li {
-    font-size: 1.2em;
-    text-decoration: underline;
-}
-#voteArea {
-    margin-top: 10px;
-}
-#voteLeft {
-    float: left;
-    background-color: {{ utils::random_hex_color() }}; 
-}
-#voteRight {
-    float: right;
-    background-color: {{ utils::random_hex_color() }}; 
-}
-#voteLeft, #voteRight {
-    width: 48% !important;
-}
-.voteLink {
-    width: 100%;
-    text-align: center;
-    font-size: 22px;
-    background-color: {{ utils::random_hex_color() }}; 
-    display: block;
-    vertical-align: middle;
-    padding: 3px 0;
-    margin-bottom: 5px;
-}
-#voteRight .voteLink {
-    background-color: {{ utils::random_hex_color() }}; 
-}
-</style>
-  <link rel="icon" type="image/png" href="/static/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
-  <link rel="shortcut icon" href="/static/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
+  <style>
+    :root {
+      --link-color: {{ utils::random_hex_color() }};
+      --link-weight: {{ utils::random_font_style() }};
+      --link-visited-color: {{ utils::random_hex_color() }};
+      --link-visited-weight: {{ utils::random_font_style() }};
+      --link-hover-color: {{ utils::random_hex_color() }};
+      --link-hover-weight: {{ utils::random_font_style() }};
+      --link-active-color: {{ utils::random_hex_color() }};
+      --link-active-weight: {{ utils::random_font_style() }};
+      --header-text-color: {{ utils::random_hex_color() }};
+      --header-bg-color: {{ utils::random_hex_color() }};
+      --channel-text-color: {{ utils::random_hex_color() }};
+      --statement-text-color: {{ utils::random_hex_color() }};
+      --statement-bg-color: {{ utils::random_hex_color() }};
+      --statement-margin-left: {{ utils::random_number(10, 500) }}px;
+      --statement-font-style: {{ utils::random_font_style() }};
+      --statement-font-size: {{ utils::random_number(14, 40) }}px;
+      --body-bg-color: {{ utils::random_hex_color() }};
+    }
+  </style>
+  <link rel="stylesheet" href="static/style.css" />
 </head>
 
 <body>
-<div>
-    <span class="header">#magistr quotes!</span>
-    <span class="channel">- #magistr @ dk.quakenet.org</span><br />
-    <span class="statement">{{ utils::random_statement() }}</span>
-</div>
+  <header>
+    <h1 class="header">#magistr quotes!</h1>
+    <p class="channel">- #magistr @ dk.quakenet.org</p>
+    <p class="statement">{{ utils::random_statement() }}</p>
+  </header>
 
-<div id="linkD"><h2><a href="/ny.php">--&gt; Brækker du dig af grin? Så har du set noget på #magistr som
-burde quotes. Klik her. NU &lt;--</a></h2></div>
+  <div id="linkD">
+    <h2>
+      <a href="/ny.php">--&gt; Brækker du dig af grin? Så har du set noget på #magistr somburde
+        burde quotes. Klik her. NU &lt;--</a>
+    </h2>
+  </div>
 
-<div class="quotes">
-{% block content %}{% endblock %}
-</div>
-
-
+  <main>
+{%- block content %}{% endblock -%}
+  </main>
 </body>
 </html>

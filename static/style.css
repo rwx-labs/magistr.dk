@@ -1,0 +1,93 @@
+:root {
+  --font-sans:  verdana, geneva, arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", Times, serif;
+  --font-mono:  monospace;
+}
+
+body {
+  color: #000000;
+  background-color: var(--body-bg-color);
+  font-size: 12px;
+  font-style: normal;
+  font-family: var(--font-sans);
+}  
+
+a:link {
+  color: var(--link-color);
+  font-weight: var(--link-weight);
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--link-visited-color); 
+  font-weight: var(--link-visited-weight);
+  text-decoration: none;
+}
+
+#linkD {
+  size: 20px;
+}
+
+a:hover {
+  color: var(--link-hover-color); 
+  font-weight: var(--link-hover-weight);
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--link-active-color); 
+  font-weight: var(--link-active-weight);
+  text-decoration: none;
+} 
+
+h1 {
+  color: var(--header-text-color); 
+  background-color: var(--header-bg-color); 
+  font-family: var(--font-serif);
+  font-size: 40px;
+  font-style: bold;
+}
+
+h1.header {
+  display: inline;
+}
+
+.channel {
+  color: var(--channel-text-color); 
+  display: inline;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-style: normal;
+  text-decoration: underline;
+}
+
+.quote header h2 {
+  font-size: 12pt;
+  border-bottom: 1px dashed #000;
+}
+
+.quoteDate {
+  border-bottom: 1px dashed black;
+}
+
+.statement {
+  display: block;
+  margin: 0 0 0 var(--statement-margin-left);
+  top: -10px;
+  width: fit-content;
+  color: var(--statement-text-color); 
+  background-color: var(--statement-bg-color); 
+  font-family: var(--font-sans);
+  font-style: var(--statement-font-style);
+  font-size: var(--statement-font-size);
+}
+
+.quoteText {
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+li {
+  font-size: 1.2em;
+  text-decoration: underline;
+}

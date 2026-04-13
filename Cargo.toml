@@ -18,7 +18,7 @@ opentelemetry-otlp = "0.31.1"
 opentelemetry-resource-detectors = "0.10.0"
 opentelemetry-semantic-conventions = "0.31.0"
 opentelemetry_sdk = { version = "0.31", features = ["rt-tokio"] }
-rand = "0.10.0"
+rand = "0.10.1"
 rust-embed = "8.3.0"
 serde = { version = "1.0.160", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls", "postgres"] }

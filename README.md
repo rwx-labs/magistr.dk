@@ -1,18 +1,44 @@
 # magistr.dk
 
-This is the website for magistr.dk.
+A high-performance quote management and display service.
 
-## Environment variables
+## Tech Stack
 
-This is a list of environment variables that the application supports.
+- **Rust**
+- **Axum** (Web Framework)
+- **SQLx** (PostgreSQL)
+- **Askama** (Templating)
+- **OpenTelemetry** & **Jaeger** (Observability)
 
+## Getting Started
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `MAGISTR_TRACING_ENABLED` | Boolean | `true` | Enable tracing exporter |
-| `MAGISTR_DATABASE_URL` | String | `postgresql://magistr:password@localhost/magistr_development` | Connection URL to the database |
-| `MAGISTR_DATABASE_MAX_CONNECTIONS` | Number | 5 | Maximum number of connections the cool maintains at once |
-| `MAGISTR_DATABASE_IDLE_TIMEOUT` | Number | 30 | How long a connection in the database connection pool can stay idle until closed |
-| `MAGISTR_HTTP_ADDRESS` | String | `[::]:3000` | Address to start listening for HTTP requests on |
-| `MAGISTR_HTTP_COMPRESSION` | Boolean | `true` | Support compressing responses if the client supports it |
+### Prerequisites
 
+- [Rust toolchain](https://rustup.rs/)
+- [Docker](https://www.docker.com/) or [Podman](https://podman.io/)
+
+### Local Development
+
+1. **Start dependencies**:
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Run the application**:
+   ```bash
+   cargo run
+   ```
+   *Note: Database migrations are applied automatically on startup.*
+
+## Configuration
+
+Environment variables (prefixed with `MAGISTR_`):
+
+| Variable | Default | Description |
+|---|---|---|
+| `MAGISTR_DATABASE_URL` | `postgresql://magistr:password@localhost/magistr_development` | Database connection URL |
+| `MAGISTR_HTTP_ADDRESS` | `[::]:3000` | HTTP server address |
+| `MAGISTR_TRACING_ENABLED` | `true` | Enable OpenTelemetry tracing |
+| `MAGISTR_DATABASE_MAX_CONNECTIONS` | `5` | Max DB connection pool size |
+| `MAGISTR_DATABASE_IDLE_TIMEOUT` | `30` | DB connection idle timeout (seconds) |
+| `MAGISTR_HTTP_COMPRESSION` | `true` | Enable HTTP response compression |

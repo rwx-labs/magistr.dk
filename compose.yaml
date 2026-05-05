@@ -8,24 +8,24 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: magistr_development
     ports:
-    - 127.0.0.1:5432:5432
+      - 127.0.0.1:5432:5432
     volumes:
-    - postgres_data:/var/lib/postgresql/18/docker
+      - postgres_data:/var/lib/postgresql/18/docker
 
   jaeger:
-    image: jaegertracing/jaeger:2.16.0
+    image: jaegertracing/jaeger:2.17.0
     ports:
-    - '127.0.0.1:6831:6831/udp'
-    - '127.0.0.1:6832:6832/udp'
-    - '127.0.0.1:4317:4317'
-    - '127.0.0.1:4318:4318'
-    - '127.0.0.1:16686:16686'
-    - '127.0.0.1:14268:14268'
+      - '127.0.0.1:6831:6831/udp'
+      - '127.0.0.1:6832:6832/udp'
+      # - '127.0.0.1:4317:4317'
+      # - '127.0.0.1:4318:4318'
+      - '4317:4317'
+      - '4318:4318'
+      - '127.0.0.1:16686:16686'
+      - '127.0.0.1:14268:14268'
     command:
-    - --set
-    - receivers.otlp.protocols.http.endpoint=127.0.0.1:4318
-    - --set
-    - receivers.otlp.protocols.grpc.endpoint=127.0.0.1:4317
+      - --set=receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317
+      - --set=receivers.otlp.protocols.http.endpoint=0.0.0.0:4318
 
 volumes:
   postgres_data:

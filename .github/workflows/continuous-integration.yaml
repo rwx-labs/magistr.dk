@@ -44,6 +44,6 @@ jobs:
           ${{ runner.os }}-cargo-${{ matrix.rust }}-
           ${{ runner.os }}-cargo-
     - name: Run Clippy check
-      uses: clechasseur/rs-clippy-check@9190480d27706dc2fd75d122753936cafafa2154 # v6.0.1
+      uses: clechasseur/rs-clippy-check@1e16925ceec49b64803a6abc5f6bbe79044c3bd4 # v6.0.4
       with:
         args: --all-features

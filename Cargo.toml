@@ -7,7 +7,7 @@ edition = "2024"
 
 [dependencies]
 askama = { version = "0.15.5" }
-axum = "0.8.4"
+axum = "0.8.9"
 cached = { version = "0.59.0", features = ["async"] }
 chrono = "0.4.24"
 figment = { version = "0.10.19", features = ["env", "toml"] }
